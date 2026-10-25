@@ -4,8 +4,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,6 +54,40 @@ public class AuthController {
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
         	return ResponseEntity.status(401).body("Credenciales inválidas: " + e.getMessage());
+        }
+    }
+    
+  
+    @GetMapping("/perfil")
+    public ResponseEntity<?> perfil(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(401)
+                        .body("Acceso denegado: token no proporcionado o formato incorrecto. "
+                            + "Use: Bearer <TOKEN>");
+            }
+            String token = authHeader.substring(7);
+            com.auth0.jwt.interfaces.DecodedJWT tokenDecodificado = JwtUtil.validarToken(token);
+            String username = tokenDecodificado.getSubject();
+            String rol = tokenDecodificado.getClaim("rol").asString();
+            String saludo;
+            if (rol.equals("ADMIN")) {
+                saludo = 
+                		"Bienvenido, Voluntario del Refugio " + username + ", tiene permisos habilitados.";
+            } else {
+                saludo = 
+                		"Bienvenido, Adoptante " + username + ", Puedes ver las mascotas disponibles y actualizar tus datos.";
+            }
+
+            return ResponseEntity.ok(saludo);
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity.status(401)
+                    .body("Acceso denegado: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body("Error al acceder al perfil: " + e.getMessage());
         }
     }
 }
