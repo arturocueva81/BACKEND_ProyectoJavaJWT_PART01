@@ -1,3 +1,20 @@
 -- paso2 Creación y Configuración de la Base de Datos: proyectos_db
 
 CREATE DATABASE proyectos_db;
+
+-- Parte1 crear la tabla de usuarios
+CREATE TABLE usuarios (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    rol VARCHAR(20) NOT NULL
+);
+
+-- HITO 1
+SELECT * FROM usuarios;
+
+-- Almacenar contraseñas en texto plano representa una vulnerabilidad crítica. 
+-- Cualquier persona con acceso al servidor de base de datos puede leer directamente todas las credenciales sin herramientas especiales. 
+-- Mediante SQL Injection un atacante externo puede extraer la tabla completa obteniendo username y password en claro. 
+-- Al no existir capa criptográfica, comprometer la base de datos implica comprometer todas las cuentas del sistema.
+-- Esta práctica viola los principios de seguridad por diseño y está prohibida por regulaciones como GDPR y PCI-DSS.
