@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "mascotas")
@@ -62,6 +63,7 @@ public class Mascota {
 		this.mimeType = mimeType;
 	}
 
+	@JsonIgnore
 	public byte[] getFoto() {
 		return foto;
 	}
